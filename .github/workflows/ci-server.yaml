@@ -485,6 +485,63 @@ jobs:
     with:
       skip: ${{ needs.upgrade-changed-files-check.outputs.any_changed != 'true' }}
 
+  # Enumerate every public app so the install-smoke job below can fan out over
+  # all of them, not just the ones changed in this PR.
+  discover-public-apps:
+    needs: changed-files-check
+    if: needs.changed-files-check.outputs.any_changed == 'true'
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Build matrix of public apps
+        id: set-matrix
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const root = 'packages/twenty-apps/public';
+          const matrix = fs.readdirSync(root, { withFileTypes: true })
+            .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
+            .map((entry) => entry.name)
+            .filter((name) => fs.existsSync(path.join(root, name, 'package.json')))
+            .map((name) => ({ name, path: path.join(root, name) }));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(matrix)}\n`);
+          NODE
+
+  # Guard against server changes that would break installing the current public
+  # apps. Deploy + install only (smoke): each app's full suite lives in CI Twenty
+  # Apps. Reuses the server-build cache via `needs: server-build`.
+  server-apps-install-smoke:
+    needs: [discover-public-apps, server-build]
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.discover-public-apps.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 10
+      - name: Spawn Twenty server from monorepo
+        id: twenty
+        uses: ./.github/actions/spawn-twenty-server
+        with:
+          source: local
+          server-build-cache-key: ${{ env.SERVER_BUILD_CACHE_KEY }}
+      - name: Install app against server
+        uses: ./.github/actions/test-twenty-app
+        with:
+          api-url: ${{ steps.twenty.outputs.server-url }}
+          api-key: ${{ steps.twenty.outputs.api-key }}
+          app-path: ${{ matrix.app.path }}
+          mode: smoke
+
   ci-server-status-check:
     if: always() && !cancelled()
     timeout-minutes: 5
@@ -499,6 +556,8 @@ jobs:
         server-test,
         server-integration-test,
         cross-version-upgrade,
+        discover-public-apps,
+        server-apps-install-smoke,
       ]
     steps:
       - name: Fail job if any needs failed

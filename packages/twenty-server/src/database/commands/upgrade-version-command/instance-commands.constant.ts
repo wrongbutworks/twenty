@@ -93,7 +93,7 @@ import { AddPendingQuestionMessageIdToAgentChatThreadFastInstanceCommand } from 
 import { AddWorkspaceDiscoverabilityToWorkspaceFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783004140000-add-workspace-discoverability-to-workspace';
 import { AddStatusToFileFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783082964705-add-status-to-file';
 import { AddPendingMimeCheckToFileFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783094691548-add-pending-mime-check-to-file';
-import { DropMetadataStandardOverridesColumnFastInstanceCommand } from './2-20/2-20-instance-command-fast-1782991100000-drop-metadata-standard-overrides-column';
+import { DropMetadataStandardOverridesColumnFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783511477234-drop-metadata-standard-overrides-column';
 import { AddLogoToApplicationRegistrationFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783069672191-add-logo-to-application-registration';
 import { BackfillLogoOnApplicationRegistrationSlowInstanceCommand } from './2-19/2-19-instance-command-slow-1783069673191-backfill-logo-on-application-registration';
 import { AddDisplayFieldsToApplicationRegistrationFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783073776590-add-display-fields-to-application-registration';
@@ -101,6 +101,9 @@ import { BackfillDisplayFieldsOnApplicationRegistrationSlowInstanceCommand } fro
 import { CreateApplicationRegistrationClaimCoreTableFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783200000000-create-application-registration-claim-core-table';
 import { AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783200100000-add-listing-request-fields-to-application-registration';
 import { UnlistUnclaimedNpmApplicationRegistrationsSlowInstanceCommand } from './2-19/2-19-instance-command-slow-1783200100001-unlist-unclaimed-npm-application-registrations';
+import { BackfillIsFeaturedOnApplicationRegistrationSlowInstanceCommand } from './2-19/2-19-instance-command-slow-1783120000000-backfill-is-featured-on-application-registration';
+import { AllowServerScopedFileFastInstanceCommand } from 'src/database/commands/upgrade-version-command/2-20/2-20-instance-command-fast-1783499671541-allow-server-scoped-file';
+import { CreateWorkflowVersionCoreTableFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783512000000-create-workflow-version-core-table';
 
 export const INSTANCE_COMMANDS = [
   AddViewFieldGroupIdIndexOnViewFieldFastInstanceCommand,
@@ -204,4 +207,7 @@ export const INSTANCE_COMMANDS = [
   BackfillDisplayFieldsOnApplicationRegistrationSlowInstanceCommand,
   AddStatusToFileFastInstanceCommand,
   AddPendingMimeCheckToFileFastInstanceCommand,
+  BackfillIsFeaturedOnApplicationRegistrationSlowInstanceCommand,
+  AllowServerScopedFileFastInstanceCommand,
+  CreateWorkflowVersionCoreTableFastInstanceCommand,
 ];

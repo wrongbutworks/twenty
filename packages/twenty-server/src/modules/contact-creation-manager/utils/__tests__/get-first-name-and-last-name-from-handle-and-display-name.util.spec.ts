@@ -142,6 +142,32 @@ describe('getFirstNameAndLastNameFromHandleAndDisplayName', () => {
         expected: { firstName: 'Jane', lastName: 'Smith' },
       },
     },
+    {
+      title: 'should parse display name for a phone handle',
+      context: {
+        handle: '14155552671',
+        displayName: 'john doe',
+        expected: { firstName: 'John', lastName: 'Doe' },
+      },
+    },
+    {
+      title:
+        'should return an empty name when a phone handle has no display name',
+      context: {
+        handle: '14155552671',
+        displayName: '',
+        expected: { firstName: '', lastName: '' },
+      },
+    },
+    {
+      title:
+        'should return an empty name when a phone handle display name is the phone number',
+      context: {
+        handle: '14155552671',
+        displayName: '+1 (415) 555-2671',
+        expected: { firstName: '', lastName: '' },
+      },
+    },
   ];
 
   test.each(testCases)(

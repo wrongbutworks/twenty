@@ -150,6 +150,87 @@ describe('CreateCompanyAndPersonService', () => {
       ).toContain('jane.smith@company.com');
     });
 
+    describe('phone handles', () => {
+      const phoneContact: Contact = {
+        handle: '14155552671',
+        displayName: 'John Doe',
+      };
+
+      const existingPersonWithPhone = {
+        id: 'phone-person-1',
+        phones: {
+          primaryPhoneNumber: '4155552671',
+          primaryPhoneCallingCode: '+1',
+          primaryPhoneCountryCode: 'US',
+          additionalPhones: null,
+        },
+        deletedAt: null,
+      } as unknown as PersonWorkspaceEntity;
+
+      it('should create a person for a new phone contact without creating a company domain', () => {
+        const result =
+          service.computeContactsThatNeedPersonCreateAndRestoreAndWorkDomainNamesToCreate(
+            [phoneContact],
+            [],
+            FieldActorSource.EMAIL,
+            mockConnectedAccount,
+            null,
+            [],
+          );
+
+        expect(result.contactsThatNeedPersonCreate).toEqual([phoneContact]);
+        expect(result.workDomainNamesToCreate).toEqual([]);
+      });
+
+      it('should not re-create a person that already exists with the same phone', () => {
+        const result =
+          service.computeContactsThatNeedPersonCreateAndRestoreAndWorkDomainNamesToCreate(
+            [phoneContact],
+            [],
+            FieldActorSource.EMAIL,
+            mockConnectedAccount,
+            null,
+            [existingPersonWithPhone],
+          );
+
+        expect(result.contactsThatNeedPersonCreate).toEqual([]);
+        expect(result.contactsThatNeedPersonRestore).toEqual([]);
+      });
+
+      it('should dedup a plus-prefixed handle against the same stored phone', () => {
+        const result =
+          service.computeContactsThatNeedPersonCreateAndRestoreAndWorkDomainNamesToCreate(
+            [{ handle: '+14155552671', displayName: 'John Doe' }],
+            [],
+            FieldActorSource.EMAIL,
+            mockConnectedAccount,
+            null,
+            [existingPersonWithPhone],
+          );
+
+        expect(result.contactsThatNeedPersonCreate).toEqual([]);
+      });
+
+      it('should restore a soft-deleted person matched by phone', () => {
+        const result =
+          service.computeContactsThatNeedPersonCreateAndRestoreAndWorkDomainNamesToCreate(
+            [phoneContact],
+            [],
+            FieldActorSource.EMAIL,
+            mockConnectedAccount,
+            null,
+            [
+              {
+                ...existingPersonWithPhone,
+                deletedAt: new Date(),
+              } as unknown as PersonWorkspaceEntity,
+            ],
+          );
+
+        expect(result.contactsThatNeedPersonCreate).toEqual([]);
+        expect(result.contactsThatNeedPersonRestore).toEqual([phoneContact]);
+      });
+    });
     describe('peopleToEnrichNames', () => {
       const contact: Contact = {
         handle: 'felix@twenty.com',
@@ -401,6 +482,51 @@ describe('CreateCompanyAndPersonService', () => {
           },
         ]);
       });
+    });
+  });
+
+  describe('formatPeopleToCreateFromContacts', () => {
+    const createdBy = {
+      source: FieldActorSource.EMAIL,
+      workspaceMember: null,
+      context: {},
+    } as unknown as Parameters<
+      CreateCompanyAndPersonService['formatPeopleToCreateFromContacts']
+    >[0]['createdBy'];
+
+    it('should create a phone person with phones populated and no email or company', () => {
+      const [person] = service.formatPeopleToCreateFromContacts({
+        contactsToCreate: [{ handle: '14155552671', displayName: 'John Doe' }],
+        createdBy,
+        companiesMap: {},
+      });
+
+      expect(person.phones).toEqual({
+        primaryPhoneNumber: '4155552671',
+        primaryPhoneCallingCode: '+1',
+        primaryPhoneCountryCode: 'US',
+        additionalPhones: null,
+      });
+      expect(person.name).toEqual({ firstName: 'John', lastName: 'Doe' });
+      expect(person.emails).toBeUndefined();
+      expect(person.companyId).toBeUndefined();
+    });
+
+    it('should keep creating email people with a primary email', () => {
+      const [person] = service.formatPeopleToCreateFromContacts({
+        contactsToCreate: [
+          { handle: 'John.Doe@company.com', displayName: 'John Doe' },
+        ],
+        createdBy,
+        companiesMap: { 'company.com': 'company-1' },
+      });
+
+      expect(person.emails).toEqual({
+        primaryEmail: 'john.doe@company.com',
+        additionalEmails: null,
+      });
+      expect(person.companyId).toBe('company-1');
+      expect(person.phones).toBeUndefined();
     });
   });
 });

@@ -14,13 +14,11 @@ import {
   ApplicationException,
   ApplicationExceptionCode,
 } from 'src/engine/core-modules/application/application.exception';
-import { ApplicationGalleryImageService } from 'src/engine/core-modules/application/application-gallery-image/application-gallery-image.service';
 import { isImageFilePath } from 'src/engine/core-modules/application/application-gallery-image/utils/is-image-file-path.util';
 import { ApplicationRegistrationEntity } from 'src/engine/core-modules/application/application-registration/application-registration.entity';
 import { ApplicationRegistrationService } from 'src/engine/core-modules/application/application-registration/application-registration.service';
 import { ApplicationRegistrationSourceType } from 'src/engine/core-modules/application/application-registration/enums/application-registration-source-type.enum';
 import { ManifestAssetUrlResolverService } from 'src/engine/core-modules/application/application-registration/manifest-asset-url-resolver.service';
-import { toGalleryImagePaths } from 'src/engine/core-modules/application/application-registration/utils/to-gallery-image-paths.util';
 import { ApplicationEntity } from 'src/engine/core-modules/application/application.entity';
 import { ApplicationService } from 'src/engine/core-modules/application/application.service';
 import { ApplicationPackageFetcherService } from 'src/engine/core-modules/application/application-package/application-package-fetcher.service';
@@ -72,7 +70,6 @@ export class ApplicationInstallService {
     private readonly messageQueueService: MessageQueueService,
     private readonly workspaceCacheService: WorkspaceCacheService,
     private readonly manifestAssetUrlResolverService: ManifestAssetUrlResolverService,
-    private readonly applicationGalleryImageService: ApplicationGalleryImageService,
   ) {}
 
   async installApplication(params: {
@@ -223,7 +220,7 @@ export class ApplicationInstallService {
         }
       }
 
-      const fileIdByRelativePath = await this.writeFilesToStorage(
+      await this.writeFilesToStorage(
         resolvedPackage.extractedDir,
         resolvedPackage.manifest,
         universalIdentifier,
@@ -243,12 +240,6 @@ export class ApplicationInstallService {
           workspaceId: params.workspaceId,
         });
       }
-
-      await this.importGalleryImages({
-        manifest: resolvedPackage.manifest,
-        applicationRegistrationId: appRegistration.id,
-        fileIdByRelativePath,
-      });
 
       await this.runPreInstallHook({
         manifest: resolvedPackage.manifest,
@@ -627,51 +618,6 @@ export class ApplicationInstallService {
     });
 
     return file.id;
-  }
-
-  private async importGalleryImages({
-    manifest,
-    applicationRegistrationId,
-    fileIdByRelativePath,
-  }: {
-    manifest: Manifest;
-    applicationRegistrationId: string;
-    fileIdByRelativePath: Map<string, string>;
-  }): Promise<void> {
-    const galleryImagePaths = toGalleryImagePaths(manifest.application);
-    const fileIds: string[] = [];
-
-    for (const galleryImagePath of galleryImagePaths) {
-      if (
-        galleryImagePath.startsWith('http://') ||
-        galleryImagePath.startsWith('https://')
-      ) {
-        continue;
-      }
-
-      if (!isImageFilePath(galleryImagePath)) {
-        this.logger.warn(
-          `Gallery image "${galleryImagePath}" is not a supported image type; skipping`,
-        );
-        continue;
-      }
-
-      const fileId = fileIdByRelativePath.get(galleryImagePath);
-
-      if (!isDefined(fileId)) {
-        this.logger.warn(
-          `Gallery image "${galleryImagePath}" not found in package public assets; skipping`,
-        );
-        continue;
-      }
-
-      fileIds.push(fileId);
-    }
-
-    await this.applicationGalleryImageService.replaceRegistrationGalleryImages({
-      applicationRegistrationId,
-      fileIds,
-    });
   }
 
   private buildFileList(

@@ -15,16 +15,16 @@ import { ApplicationRegistrationEntity } from 'src/engine/core-modules/applicati
 import { FileEntity } from 'src/engine/core-modules/file/entities/file.entity';
 import { WasIntroducedInUpgrade } from 'src/engine/core-modules/upgrade/decorators/was-introduced-in-upgrade.decorator';
 
-@Entity({ name: 'applicationGalleryImage', schema: 'core' })
+@Entity({ name: 'applicationRegistrationGalleryImage', schema: 'core' })
 @WasIntroducedInUpgrade({
   upgradeCommandName:
-    '2.20.0_CreateApplicationGalleryImageCoreTableFastInstanceCommand_1783520407274',
+    '2.20.0_CreateApplicationRegistrationGalleryImageCoreTableFastInstanceCommand_1783520407274',
 })
-@Index('IDX_APPLICATION_GALLERY_IMAGE_FILE_ID', ['fileId'])
-@Index('IDX_APPLICATION_GALLERY_IMAGE_APPLICATION_REGISTRATION_ID', [
+@Index('IDX_APPLICATION_REGISTRATION_GALLERY_IMAGE_FILE_ID', ['fileId'])
+@Index('IDX_APPLICATION_REGISTRATION_GALLERY_IMAGE_REGISTRATION_ID', [
   'applicationRegistrationId',
 ])
-export class ApplicationGalleryImageEntity {
+export class ApplicationRegistrationGalleryImageEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

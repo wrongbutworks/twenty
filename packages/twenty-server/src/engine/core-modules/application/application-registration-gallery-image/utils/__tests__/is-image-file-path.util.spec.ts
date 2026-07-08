@@ -1,4 +1,4 @@
-import { isImageFilePath } from 'src/engine/core-modules/application/application-gallery-image/utils/is-image-file-path.util';
+import { isImageFilePath } from 'src/engine/core-modules/application/application-registration-gallery-image/utils/is-image-file-path.util';
 
 describe('isImageFilePath', () => {
   it.each([

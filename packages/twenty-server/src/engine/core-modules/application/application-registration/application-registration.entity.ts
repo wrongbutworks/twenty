@@ -19,7 +19,7 @@ import {
 
 import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
 import { type Manifest } from 'twenty-shared/application';
-import { ApplicationGalleryImageEntity } from 'src/engine/core-modules/application/application-gallery-image/application-gallery-image.entity';
+import { ApplicationRegistrationGalleryImageEntity } from 'src/engine/core-modules/application/application-registration-gallery-image/application-registration-gallery-image.entity';
 import { ApplicationRegistrationVariableEntity } from 'src/engine/core-modules/application/application-registration-variable/application-registration-variable.entity';
 import { ApplicationRegistrationSourceType } from 'src/engine/core-modules/application/application-registration/enums/application-registration-source-type.enum';
 import { FileEntity } from 'src/engine/core-modules/file/entities/file.entity';
@@ -234,11 +234,11 @@ export class ApplicationRegistrationEntity {
   variables: Relation<ApplicationRegistrationVariableEntity[]>;
 
   @OneToMany(
-    () => ApplicationGalleryImageEntity,
+    () => ApplicationRegistrationGalleryImageEntity,
     (galleryImage) => galleryImage.applicationRegistration,
     { onDelete: 'CASCADE' },
   )
-  galleryImages: Relation<ApplicationGalleryImageEntity[]>;
+  galleryImages: Relation<ApplicationRegistrationGalleryImageEntity[]>;
 
   @Field()
   @CreateDateColumn({ type: 'timestamptz' })

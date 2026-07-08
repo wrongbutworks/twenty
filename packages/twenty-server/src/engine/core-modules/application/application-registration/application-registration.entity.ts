@@ -214,7 +214,7 @@ export class ApplicationRegistrationEntity {
   })
   @WasIntroducedInUpgrade({
     upgradeCommandName:
-      '2.20.0_AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand_1783200100000',
+      '2.20.0_AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand_1783520000001',
   })
   listingRequestStatus: ApplicationRegistrationListingRequestStatus;
 
@@ -222,7 +222,7 @@ export class ApplicationRegistrationEntity {
   @Column({ nullable: true, type: 'timestamptz' })
   @WasIntroducedInUpgrade({
     upgradeCommandName:
-      '2.20.0_AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand_1783200100000',
+      '2.20.0_AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand_1783520000001',
   })
   listingRequestedAt: Date | null;
 

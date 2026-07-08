@@ -98,9 +98,9 @@ import { AddLogoToApplicationRegistrationFastInstanceCommand } from './2-19/2-19
 import { BackfillLogoOnApplicationRegistrationSlowInstanceCommand } from './2-19/2-19-instance-command-slow-1783069673191-backfill-logo-on-application-registration';
 import { AddDisplayFieldsToApplicationRegistrationFastInstanceCommand } from './2-19/2-19-instance-command-fast-1783073776590-add-display-fields-to-application-registration';
 import { BackfillDisplayFieldsOnApplicationRegistrationSlowInstanceCommand } from './2-19/2-19-instance-command-slow-1783073776591-backfill-display-fields-on-application-registration';
-import { CreateApplicationRegistrationClaimCoreTableFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783200000000-create-application-registration-claim-core-table';
-import { AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783200100000-add-listing-request-fields-to-application-registration';
-import { UnlistUnclaimedNpmApplicationRegistrationsSlowInstanceCommand } from './2-20/2-20-instance-command-slow-1783200100001-unlist-unclaimed-npm-application-registrations';
+import { CreateApplicationRegistrationClaimCoreTableFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783520000000-create-application-registration-claim-core-table';
+import { AddListingRequestFieldsToApplicationRegistrationFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783520000001-add-listing-request-fields-to-application-registration';
+import { UnlistUnclaimedNpmApplicationRegistrationsSlowInstanceCommand } from './2-20/2-20-instance-command-slow-1783520000002-unlist-unclaimed-npm-application-registrations';
 import { BackfillIsFeaturedOnApplicationRegistrationSlowInstanceCommand } from './2-19/2-19-instance-command-slow-1783120000000-backfill-is-featured-on-application-registration';
 import { AllowServerScopedFileFastInstanceCommand } from 'src/database/commands/upgrade-version-command/2-20/2-20-instance-command-fast-1783499671541-allow-server-scoped-file';
 import { CreateWorkflowVersionCoreTableFastInstanceCommand } from './2-20/2-20-instance-command-fast-1783512000000-create-workflow-version-core-table';

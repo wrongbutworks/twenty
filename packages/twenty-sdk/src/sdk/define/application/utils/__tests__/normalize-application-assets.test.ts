@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { normalizeApplicationAssets } from '@/cli/utilities/build/manifest/utils/normalize-application-assets';
-import { type ApplicationConfig } from '@/sdk/define';
+import { normalizeApplicationAssets } from '@/sdk/define/application/utils/normalize-application-assets';
+import { type ApplicationConfig } from '@/sdk/define/application/application-config';
 
 const buildConfig = (config: Record<string, unknown>): ApplicationConfig =>
   config as unknown as ApplicationConfig;

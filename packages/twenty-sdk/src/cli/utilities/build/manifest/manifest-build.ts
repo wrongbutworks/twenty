@@ -9,7 +9,6 @@ import { extractManifestFromFile } from '@/cli/utilities/build/manifest/manifest
 import { addMissingFieldOptionIds } from '@/cli/utilities/build/manifest/utils/add-missing-field-option-ids';
 import { fromRoleConfigToRoleManifest } from '@/cli/utilities/build/manifest/utils/from-role-config-to-role-manifest';
 import { getDefaultFieldsInObjectFields } from '@/cli/utilities/build/manifest/utils/get-default-fields-in-object-fields';
-import { normalizeApplicationAssets } from '@/cli/utilities/build/manifest/utils/normalize-application-assets';
 import { validateConditionalAvailabilityUsage } from '@/cli/utilities/build/manifest/utils/validate-conditional-availability-usage';
 import { validateViewFilterOperands } from '@/cli/utilities/build/manifest/utils/validate-view-filter-operands';
 import { type ApplicationConfig, type LogicFunctionConfig } from '@/sdk/define';
@@ -569,14 +568,6 @@ export const buildManifest = async (
     }),
   );
 
-  const assetNormalization = applicationConfig
-    ? normalizeApplicationAssets(applicationConfig)
-    : undefined;
-
-  if (assetNormalization) {
-    warnings.push(...assetNormalization.warnings);
-  }
-
   const application: ApplicationManifest | undefined =
     applicationConfig && resolvedDefaultRoleUniversalIdentifier
       ? (() => {
@@ -588,8 +579,8 @@ export const buildManifest = async (
 
           return {
             ...applicationConfigRest,
-            logo: assetNormalization?.logo,
-            galleryImages: assetNormalization?.galleryImages ?? [],
+            logo: applicationConfig.logo,
+            galleryImages: applicationConfig.galleryImages ?? [],
             defaultRoleUniversalIdentifier:
               resolvedDefaultRoleUniversalIdentifier,
             aboutDescription: readmeContent,

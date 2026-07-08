@@ -1,4 +1,4 @@
-import { type ApplicationConfig } from '@/sdk/define';
+import { type ApplicationConfig } from '@/sdk/define/application/application-config';
 
 const isAbsoluteUrl = (value: string): boolean =>
   value.startsWith('http://') || value.startsWith('https://');

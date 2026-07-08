@@ -1,0 +1,14 @@
+export const APPLICATION_REGISTRATION_FILE_TYPE = {
+  LOGO: 'LOGO',
+  GALLERY_IMAGE: 'GALLERY_IMAGE',
+  TARBALL: 'TARBALL',
+} as const;
+
+export type ApplicationRegistrationFileType =
+  (typeof APPLICATION_REGISTRATION_FILE_TYPE)[keyof typeof APPLICATION_REGISTRATION_FILE_TYPE];
+
+// Types that can have at most one row per registration.
+export const SINGLETON_APPLICATION_REGISTRATION_FILE_TYPES = [
+  APPLICATION_REGISTRATION_FILE_TYPE.LOGO,
+  APPLICATION_REGISTRATION_FILE_TYPE.TARBALL,
+] as const;

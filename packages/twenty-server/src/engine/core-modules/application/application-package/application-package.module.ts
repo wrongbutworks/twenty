@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ApplicationPackageFetcherService } from 'src/engine/core-modules/application/application-package/application-package-fetcher.service';
+import { ApplicationRegistrationFileModule } from 'src/engine/core-modules/application/application-registration-file/application-registration-file.module';
 import { ApplicationVersionValidationService } from 'src/engine/core-modules/application/application-package/application-version-validation.service';
 import { ApplicationEntity } from 'src/engine/core-modules/application/application.entity';
 import { FileStorageModule } from 'src/engine/core-modules/file-storage/file-storage.module';
@@ -12,6 +13,7 @@ import { UpgradeModule } from 'src/engine/core-modules/upgrade/upgrade.module';
 
 @Module({
   imports: [
+    ApplicationRegistrationFileModule,
     FileStorageModule,
     SecureHttpClientModule,
     TwentyConfigModule,

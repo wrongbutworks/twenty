@@ -14,5 +14,5 @@ export const fromManifestApplicationToDisplayFields = (
   termsUrl: application?.termsUrl ?? null,
   emailSupport: application?.emailSupport ?? null,
   issueReportUrl: application?.issueReportUrl ?? null,
-  settings: { galleryImages: toGalleryImagePaths(application) },
+  screenshots: toGalleryImagePaths(application),
 });

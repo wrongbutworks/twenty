@@ -18,6 +18,8 @@ import { type IDataloaders } from 'src/engine/dataloaders/dataloader.interface';
 import type { FileUpload } from 'graphql-upload/processRequest.mjs';
 
 import { MetadataResolver } from 'src/engine/api/graphql/graphql-config/decorators/metadata-resolver.decorator';
+import { ApplicationRegistrationFileService } from 'src/engine/core-modules/application/application-registration-file/application-registration-file.service';
+import { APPLICATION_REGISTRATION_FILE_TYPE } from 'src/engine/core-modules/application/application-registration-file/types/application-registration-file-type.type';
 import { ApplicationRegistrationVariableEntity } from 'src/engine/core-modules/application/application-registration-variable/application-registration-variable.entity';
 import { ApplicationRegistrationVariableService } from 'src/engine/core-modules/application/application-registration-variable/application-registration-variable.service';
 import { CreateApplicationRegistrationVariableInput } from 'src/engine/core-modules/application/application-registration-variable/dtos/create-application-registration-variable.input';
@@ -65,6 +67,7 @@ import {
 export class ApplicationRegistrationResolver {
   constructor(
     private readonly applicationRegistrationService: ApplicationRegistrationService,
+    private readonly applicationRegistrationFileService: ApplicationRegistrationFileService,
     private readonly applicationRegistrationVariableService: ApplicationRegistrationVariableService,
     private readonly applicationTarballService: ApplicationTarballService,
     private readonly fileUrlService: FileUrlService,
@@ -297,15 +300,22 @@ export class ApplicationRegistrationResolver {
       workspaceId,
     );
 
-    if (
-      registration.sourceType !== ApplicationRegistrationSourceType.TARBALL ||
-      !isDefined(registration.tarballFileId)
-    ) {
+    if (registration.sourceType !== ApplicationRegistrationSourceType.TARBALL) {
+      return null;
+    }
+
+    const tarballFileId =
+      await this.applicationRegistrationFileService.findFileIdByType({
+        applicationRegistrationId: registration.id,
+        type: APPLICATION_REGISTRATION_FILE_TYPE.TARBALL,
+      });
+
+    if (!isDefined(tarballFileId)) {
       return null;
     }
 
     return await this.fileUrlService.signFileByIdUrl({
-      fileId: registration.tarballFileId,
+      fileId: tarballFileId,
       workspaceId,
       fileFolder: FileFolder.AppTarball,
     });

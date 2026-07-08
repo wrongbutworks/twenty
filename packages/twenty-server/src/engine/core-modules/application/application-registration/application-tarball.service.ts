@@ -13,6 +13,8 @@ import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialE
 import { v4 } from 'uuid';
 
 import { ApplicationVersionValidationService } from 'src/engine/core-modules/application/application-package/application-version-validation.service';
+import { ApplicationRegistrationFileService } from 'src/engine/core-modules/application/application-registration-file/application-registration-file.service';
+import { APPLICATION_REGISTRATION_FILE_TYPE } from 'src/engine/core-modules/application/application-registration-file/types/application-registration-file-type.type';
 import { VERSION_REASON_TO_APPLICATION_REGISTRATION_EXCEPTION_CODE } from 'src/engine/core-modules/application/application-package/constants/version-reason-to-exception-code.constant';
 import { extractTarballSecurely } from 'src/engine/core-modules/application/application-package/utils/extract-tarball-securely.util';
 import { readJsonFile } from 'src/engine/core-modules/application/application-package/utils/read-json-file.util';
@@ -40,6 +42,7 @@ export class ApplicationTarballService {
     private readonly applicationService: ApplicationService,
     private readonly applicationRegistrationVariableService: ApplicationRegistrationVariableService,
     private readonly applicationVersionValidationService: ApplicationVersionValidationService,
+    private readonly applicationRegistrationFileService: ApplicationRegistrationFileService,
   ) {}
 
   async uploadTarball(params: {
@@ -176,6 +179,12 @@ export class ApplicationTarballService {
           { workspaceId: params.ownerWorkspaceId },
         );
 
+      const existingTarballFileId =
+        await this.applicationRegistrationFileService.findFileIdByType({
+          applicationRegistrationId: appRegistration.id,
+          type: APPLICATION_REGISTRATION_FILE_TYPE.TARBALL,
+        });
+
       const savedFile = await this.fileStorageService.writeFile({
         sourceFile: params.tarballBuffer,
         resourcePath: `${appRegistration.id}/app.tar.gz`,
@@ -183,16 +192,22 @@ export class ApplicationTarballService {
         applicationUniversalIdentifier:
           workspaceCustomFlatApplication.universalIdentifier,
         workspaceId: params.ownerWorkspaceId,
-        fileId: appRegistration.tarballFileId ?? v4(),
+        fileId: existingTarballFileId ?? v4(),
         settings: {
           isTemporaryFile: false,
           toDelete: false,
         },
       });
 
+      await this.applicationRegistrationFileService.upsertSingletonFile({
+        applicationRegistrationId: appRegistration.id,
+        fileId: savedFile.id,
+        type: APPLICATION_REGISTRATION_FILE_TYPE.TARBALL,
+        isPublic: false,
+      });
+
       await this.appRegistrationRepository.update(appRegistration.id, {
         sourceType: ApplicationRegistrationSourceType.TARBALL,
-        tarballFileId: savedFile.id,
         name: manifest.application?.displayName ?? 'Unknown App',
         manifest,
         ...fromManifestApplicationToDisplayFields(manifest.application),

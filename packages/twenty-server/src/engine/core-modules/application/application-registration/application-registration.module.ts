@@ -5,6 +5,7 @@ import { CoreEntityCacheModule } from 'src/engine/core-entity-cache/core-entity-
 import { ApplicationRegistrationEntity } from 'src/engine/core-modules/application/application-registration/application-registration.entity';
 import { ApplicationRegistrationResolver } from 'src/engine/core-modules/application/application-registration/application-registration.resolver';
 import { ApplicationRegistrationService } from 'src/engine/core-modules/application/application-registration/application-registration.service';
+import { ApplicationRegistrationFileModule } from 'src/engine/core-modules/application/application-registration-file/application-registration-file.module';
 import { ApplicationRegistrationVariableModule } from 'src/engine/core-modules/application/application-registration-variable/application-registration-variable.module';
 import { ApplicationTarballService } from 'src/engine/core-modules/application/application-registration/application-tarball.service';
 import { ManifestAssetUrlResolverService } from 'src/engine/core-modules/application/application-registration/manifest-asset-url-resolver.service';
@@ -27,6 +28,7 @@ import { WorkspaceCacheStorageModule } from 'src/engine/workspace-cache-storage/
       ApplicationEntity,
       WorkspaceEntity,
     ]),
+    ApplicationRegistrationFileModule,
     ApplicationRegistrationVariableModule,
     ApplicationModule,
     ApplicationPackageModule,

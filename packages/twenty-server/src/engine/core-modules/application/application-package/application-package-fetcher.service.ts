@@ -13,6 +13,8 @@ import { type PackageJson } from 'type-fest';
 import { IsNull, Not, Repository } from 'typeorm';
 import { v4 } from 'uuid';
 
+import { ApplicationRegistrationFileService } from 'src/engine/core-modules/application/application-registration-file/application-registration-file.service';
+import { APPLICATION_REGISTRATION_FILE_TYPE } from 'src/engine/core-modules/application/application-registration-file/types/application-registration-file-type.type';
 import { ApplicationRegistrationEntity } from 'src/engine/core-modules/application/application-registration/application-registration.entity';
 import { ApplicationRegistrationSourceType } from 'src/engine/core-modules/application/application-registration/enums/application-registration-source-type.enum';
 import {
@@ -55,6 +57,7 @@ export class ApplicationPackageFetcherService implements OnModuleInit {
     private readonly fileRepository: Repository<FileEntity>,
     @InjectRepository(ApplicationEntity)
     private readonly applicationRepository: Repository<ApplicationEntity>,
+    private readonly applicationRegistrationFileService: ApplicationRegistrationFileService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -165,7 +168,13 @@ export class ApplicationPackageFetcherService implements OnModuleInit {
   private async resolveFromTarball(
     appRegistration: ApplicationRegistrationEntity,
   ): Promise<ResolvedPackage> {
-    if (!isDefined(appRegistration.tarballFileId)) {
+    const tarballFileId =
+      await this.applicationRegistrationFileService.findFileIdByType({
+        applicationRegistrationId: appRegistration.id,
+        type: APPLICATION_REGISTRATION_FILE_TYPE.TARBALL,
+      });
+
+    if (!isDefined(tarballFileId)) {
       throw new ApplicationException(
         `App registration ${appRegistration.id} has sourceType=tarball but no tarball file`,
         ApplicationExceptionCode.TARBALL_EXTRACTION_FAILED,
@@ -179,7 +188,7 @@ export class ApplicationPackageFetcherService implements OnModuleInit {
     try {
       const file = await this.fileRepository.findOneOrFail({
         where: {
-          id: appRegistration.tarballFileId,
+          id: tarballFileId,
           workspaceId: Not(IsNull()),
         },
       });

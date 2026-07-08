@@ -11,7 +11,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   type Relation,
   UpdateDateColumn,
@@ -19,10 +18,9 @@ import {
 
 import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
 import { type Manifest } from 'twenty-shared/application';
+import { ApplicationRegistrationFileEntity } from 'src/engine/core-modules/application/application-registration-file/application-registration-file.entity';
 import { ApplicationRegistrationVariableEntity } from 'src/engine/core-modules/application/application-registration-variable/application-registration-variable.entity';
-import { type ApplicationRegistrationSettings } from 'src/engine/core-modules/application/application-registration/types/application-registration-settings.type';
 import { ApplicationRegistrationSourceType } from 'src/engine/core-modules/application/application-registration/enums/application-registration-source-type.enum';
-import { FileEntity } from 'src/engine/core-modules/file/entities/file.entity';
 import { WasIntroducedInUpgrade } from 'src/engine/core-modules/upgrade/decorators/was-introduced-in-upgrade.decorator';
 import { WasRenamedInUpgrade } from 'src/engine/core-modules/upgrade/decorators/was-renamed-in-upgrade.decorator';
 import { UserEntity } from 'src/engine/core-modules/user/user.entity';
@@ -108,13 +106,6 @@ export class ApplicationRegistrationEntity {
   @Column({ nullable: true, type: 'text' })
   sourcePackage: string | null;
 
-  @Column({ nullable: true, type: 'uuid' })
-  tarballFileId: string | null;
-
-  @OneToOne(() => FileEntity, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'tarballFileId' })
-  tarballFile: Relation<FileEntity> | null;
-
   @Field(() => String, { nullable: true })
   @Column({ nullable: true, type: 'text' })
   latestAvailableVersion: string | null;
@@ -149,17 +140,6 @@ export class ApplicationRegistrationEntity {
       '2.19.0_AddLogoToApplicationRegistrationFastInstanceCommand_1783069672191',
   })
   logo: string | null;
-
-  @Column({ nullable: true, type: 'uuid' })
-  @WasIntroducedInUpgrade({
-    upgradeCommandName:
-      '2.20.0_AddLogoFileIdToApplicationRegistrationFastInstanceCommand_1783531289490',
-  })
-  logoFileId: string | null;
-
-  @OneToOne(() => FileEntity, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'logoFileId' })
-  logoFile: Relation<FileEntity> | null;
 
   @Column({ nullable: true, type: 'text' })
   @WasIntroducedInUpgrade({
@@ -241,12 +221,12 @@ export class ApplicationRegistrationEntity {
   )
   variables: Relation<ApplicationRegistrationVariableEntity[]>;
 
-  @Column({ type: 'jsonb', nullable: true })
-  @WasIntroducedInUpgrade({
-    upgradeCommandName:
-      '2.20.0_AddSettingsToApplicationRegistrationFastInstanceCommand_1783528623950',
-  })
-  settings: ApplicationRegistrationSettings | null;
+  @OneToMany(
+    () => ApplicationRegistrationFileEntity,
+    (registrationFile) => registrationFile.applicationRegistration,
+    { onDelete: 'CASCADE' },
+  )
+  files: Relation<ApplicationRegistrationFileEntity[]>;
 
   @Field()
   @CreateDateColumn({ type: 'timestamptz' })

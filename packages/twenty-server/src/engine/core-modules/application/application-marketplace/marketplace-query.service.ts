@@ -71,13 +71,9 @@ export class MarketplaceQueryService {
   private toMarketplaceAppDetailDTO(
     registration: ApplicationRegistrationEntity,
   ): MarketplaceAppDetailDTO {
-    const galleryImagePaths = isNonEmptyArray(
-      registration.settings?.galleryImages,
-    )
-      ? registration.settings.galleryImages
-      : isNonEmptyArray(registration.screenshots)
-        ? registration.screenshots
-        : toGalleryImagePaths(registration.manifest?.application);
+    const galleryImagePaths = isNonEmptyArray(registration.screenshots)
+      ? registration.screenshots
+      : toGalleryImagePaths(registration.manifest?.application);
 
     return {
       id: registration.id,

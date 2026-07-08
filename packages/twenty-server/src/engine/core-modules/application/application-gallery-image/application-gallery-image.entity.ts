@@ -18,7 +18,7 @@ import { WasIntroducedInUpgrade } from 'src/engine/core-modules/upgrade/decorato
 @Entity({ name: 'applicationGalleryImage', schema: 'core' })
 @WasIntroducedInUpgrade({
   upgradeCommandName:
-    '2.19.0_CreateApplicationGalleryImageCoreTableFastInstanceCommand_1783249359096',
+    '2.20.0_CreateApplicationGalleryImageCoreTableFastInstanceCommand_1783520407274',
 })
 @Index('IDX_APPLICATION_GALLERY_IMAGE_FILE_ID', ['fileId'])
 @Index('IDX_APPLICATION_GALLERY_IMAGE_APPLICATION_REGISTRATION_ID', [

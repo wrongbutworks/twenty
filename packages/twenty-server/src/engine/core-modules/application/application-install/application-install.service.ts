@@ -529,9 +529,8 @@ export class ApplicationInstallService {
     manifest: Manifest,
     applicationUniversalIdentifier: string,
     workspaceId: string,
-  ): Promise<Map<string, string>> {
+  ): Promise<void> {
     const filesToWrite = this.buildFileList(manifest);
-    const fileIdByRelativePath = new Map<string, string>();
 
     for (const { relativePath, fileFolder } of filesToWrite) {
       const absolutePath = this.resolveWithinDirOrThrow(
@@ -550,7 +549,7 @@ export class ApplicationInstallService {
         );
       }
 
-      const file = await this.fileStorageService.writeFile({
+      await this.fileStorageService.writeFile({
         sourceFile: content,
         fileFolder,
         applicationUniversalIdentifier,
@@ -558,11 +557,7 @@ export class ApplicationInstallService {
         resourcePath: relativePath,
         settings: { isTemporaryFile: false, toDelete: false },
       });
-
-      fileIdByRelativePath.set(relativePath, file.id);
     }
-
-    return fileIdByRelativePath;
   }
 
   private async importLogoFile({

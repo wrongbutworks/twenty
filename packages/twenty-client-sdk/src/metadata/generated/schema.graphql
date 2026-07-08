@@ -2656,6 +2656,7 @@ type ImapSmtpCaldavPublicConnectionParams {
 }
 
 type ImapSmtpCaldavPublicConnectionParameters {
+  name: String
   IMAP: ImapSmtpCaldavPublicConnectionParams
   SMTP: ImapSmtpCaldavPublicConnectionParams
   CALDAV: ImapSmtpCaldavPublicConnectionParams
@@ -3154,6 +3155,8 @@ type Query {
   findOneApplication(id: UUID, universalIdentifier: UUID): Application!
   findManyMarketplaceApps: [MarketplaceApp!]!
   findMarketplaceAppDetail(universalIdentifier: String!): MarketplaceAppDetail!
+  publicMarketplaceApps(isFeatured: Boolean! = true): [MarketplaceApp!]!
+  publicMarketplaceAppDetail(universalIdentifier: String!): MarketplaceAppDetail!
   findApplicationRegistrationByClientId(clientId: String!): PublicApplicationRegistration
   findApplicationRegistrationByUniversalIdentifier(universalIdentifier: String!): ApplicationRegistration
   findManyApplicationRegistrations: [ApplicationRegistration!]!
@@ -4661,6 +4664,7 @@ input SendEmailAttachmentInput {
 }
 
 input EmailAccountConnectionParameters {
+  name: String
   IMAP: ConnectionParametersInput
   SMTP: ConnectionParametersInput
   CALDAV: ConnectionParametersInput

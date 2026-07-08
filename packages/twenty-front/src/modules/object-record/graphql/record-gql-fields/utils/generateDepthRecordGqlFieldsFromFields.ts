@@ -127,33 +127,36 @@ export const generateDepthRecordGqlFieldsFromFields = ({
           );
         }
 
-        const morphGqlFields = fieldMetadata.morphRelations.map(
+        const morphGqlFields = fieldMetadata.morphRelations.flatMap(
           (morphRelation) => {
             const morphTargetObjectMetadataItem = objectMetadataItems.find(
               (objectMetadataItem) =>
                 objectMetadataItem.id === morphRelation.targetObjectMetadata.id,
             );
 
-            if (!morphTargetObjectMetadataItem) {
-              throw new Error(
-                `Target object metadata item not found for ${fieldMetadata.name} (morph target ${morphRelation.targetObjectMetadata.nameSingular})`,
-              );
+            // A morph target object can be deleted while the morph relation
+            // field still references it in a stale metadata cache. Skip it
+            // instead of crashing the whole page.
+            if (!isDefined(morphTargetObjectMetadataItem)) {
+              return [];
             }
 
-            return {
-              gqlField: computeMorphRelationGqlFieldName({
-                fieldName: fieldMetadata.name,
-                relationType: morphRelation.type,
-                targetObjectMetadataNameSingular:
-                  morphRelation.targetObjectMetadata.nameSingular,
-                targetObjectMetadataNamePlural:
-                  morphRelation.targetObjectMetadata.namePlural,
-              }),
-              fieldMetadata,
-              relationIdentifierSubGqlFields: buildIdentifierGqlFields(
-                morphTargetObjectMetadataItem,
-              ),
-            };
+            return [
+              {
+                gqlField: computeMorphRelationGqlFieldName({
+                  fieldName: fieldMetadata.name,
+                  relationType: morphRelation.type,
+                  targetObjectMetadataNameSingular:
+                    morphRelation.targetObjectMetadata.nameSingular,
+                  targetObjectMetadataNamePlural:
+                    morphRelation.targetObjectMetadata.namePlural,
+                }),
+                fieldMetadata,
+                relationIdentifierSubGqlFields: buildIdentifierGqlFields(
+                  morphTargetObjectMetadataItem,
+                ),
+              },
+            ];
           },
         );
 

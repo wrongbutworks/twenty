@@ -19,8 +19,8 @@ import {
 
 import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
 import { type Manifest } from 'twenty-shared/application';
-import { ApplicationRegistrationGalleryImageEntity } from 'src/engine/core-modules/application/application-registration-gallery-image/application-registration-gallery-image.entity';
 import { ApplicationRegistrationVariableEntity } from 'src/engine/core-modules/application/application-registration-variable/application-registration-variable.entity';
+import { type ApplicationRegistrationSettings } from 'src/engine/core-modules/application/application-registration/types/application-registration-settings.type';
 import { ApplicationRegistrationSourceType } from 'src/engine/core-modules/application/application-registration/enums/application-registration-source-type.enum';
 import { FileEntity } from 'src/engine/core-modules/file/entities/file.entity';
 import { WasIntroducedInUpgrade } from 'src/engine/core-modules/upgrade/decorators/was-introduced-in-upgrade.decorator';
@@ -233,12 +233,12 @@ export class ApplicationRegistrationEntity {
   )
   variables: Relation<ApplicationRegistrationVariableEntity[]>;
 
-  @OneToMany(
-    () => ApplicationRegistrationGalleryImageEntity,
-    (galleryImage) => galleryImage.applicationRegistration,
-    { onDelete: 'CASCADE' },
-  )
-  galleryImages: Relation<ApplicationRegistrationGalleryImageEntity[]>;
+  @Column({ type: 'jsonb', nullable: true })
+  @WasIntroducedInUpgrade({
+    upgradeCommandName:
+      '2.20.0_AddSettingsToApplicationRegistrationFastInstanceCommand_1783528623950',
+  })
+  settings: ApplicationRegistrationSettings | null;
 
   @Field()
   @CreateDateColumn({ type: 'timestamptz' })

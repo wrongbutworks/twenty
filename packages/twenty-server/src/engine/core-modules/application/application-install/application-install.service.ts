@@ -14,7 +14,7 @@ import {
   ApplicationException,
   ApplicationExceptionCode,
 } from 'src/engine/core-modules/application/application.exception';
-import { isImageFilePath } from 'src/engine/core-modules/application/application-registration-gallery-image/utils/is-image-file-path.util';
+import { isImageFilePath } from 'src/engine/core-modules/application/application-registration/utils/is-image-file-path.util';
 import { ApplicationRegistrationEntity } from 'src/engine/core-modules/application/application-registration/application-registration.entity';
 import { ApplicationRegistrationService } from 'src/engine/core-modules/application/application-registration/application-registration.service';
 import { ApplicationRegistrationSourceType } from 'src/engine/core-modules/application/application-registration/enums/application-registration-source-type.enum';

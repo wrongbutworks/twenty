@@ -153,7 +153,7 @@ export class ApplicationRegistrationEntity {
   @Column({ nullable: true, type: 'uuid' })
   @WasIntroducedInUpgrade({
     upgradeCommandName:
-      '2.20.0_AddLogoFileIdToApplicationRegistrationFastInstanceCommand_1783520407273',
+      '2.20.0_AddLogoFileIdToApplicationRegistrationFastInstanceCommand_1783531289490',
   })
   logoFileId: string | null;
 

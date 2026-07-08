@@ -1,5 +1,4 @@
 import {
-  Check,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -12,7 +11,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ApplicationEntity } from 'src/engine/core-modules/application/application.entity';
 import { ApplicationRegistrationEntity } from 'src/engine/core-modules/application/application-registration/application-registration.entity';
 import { FileEntity } from 'src/engine/core-modules/file/entities/file.entity';
 import { WasIntroducedInUpgrade } from 'src/engine/core-modules/upgrade/decorators/was-introduced-in-upgrade.decorator';
@@ -23,14 +21,9 @@ import { WasIntroducedInUpgrade } from 'src/engine/core-modules/upgrade/decorato
     '2.19.0_CreateApplicationGalleryImageCoreTableFastInstanceCommand_1783249359096',
 })
 @Index('IDX_APPLICATION_GALLERY_IMAGE_FILE_ID', ['fileId'])
-@Index('IDX_APPLICATION_GALLERY_IMAGE_APPLICATION_ID', ['applicationId'])
 @Index('IDX_APPLICATION_GALLERY_IMAGE_APPLICATION_REGISTRATION_ID', [
   'applicationRegistrationId',
 ])
-@Check(
-  'CHK_APPLICATION_GALLERY_IMAGE_SINGLE_OWNER',
-  `("applicationId" IS NOT NULL AND "applicationRegistrationId" IS NULL) OR ("applicationId" IS NULL AND "applicationRegistrationId" IS NOT NULL)`,
-)
 export class ApplicationGalleryImageEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -45,33 +38,19 @@ export class ApplicationGalleryImageEntity {
   @Column({ type: 'integer', default: 0 })
   position: number;
 
-  @Column({ nullable: true, type: 'uuid' })
-  applicationId: string | null;
-
-  @ManyToOne(
-    () => ApplicationEntity,
-    (application) => application.galleryImages,
-    {
-      onDelete: 'CASCADE',
-      nullable: true,
-    },
-  )
-  @JoinColumn({ name: 'applicationId' })
-  application: Relation<ApplicationEntity> | null;
-
-  @Column({ nullable: true, type: 'uuid' })
-  applicationRegistrationId: string | null;
+  @Column({ nullable: false, type: 'uuid' })
+  applicationRegistrationId: string;
 
   @ManyToOne(
     () => ApplicationRegistrationEntity,
     (applicationRegistration) => applicationRegistration.galleryImages,
     {
       onDelete: 'CASCADE',
-      nullable: true,
+      nullable: false,
     },
   )
   @JoinColumn({ name: 'applicationRegistrationId' })
-  applicationRegistration: Relation<ApplicationRegistrationEntity> | null;
+  applicationRegistration: Relation<ApplicationRegistrationEntity>;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

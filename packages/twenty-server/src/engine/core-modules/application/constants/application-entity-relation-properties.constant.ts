@@ -11,7 +11,6 @@ export const APPLICATION_ENTITY_RELATION_PROPERTIES = [
   'packageJsonFile',
   'yarnLockFile',
   'logoFile',
-  'galleryImages',
   'applicationRegistration',
   'primaryPublicDomain',
   'publicDomains',

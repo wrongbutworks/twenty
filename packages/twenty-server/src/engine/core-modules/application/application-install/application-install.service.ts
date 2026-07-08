@@ -246,7 +246,7 @@ export class ApplicationInstallService {
 
       await this.importGalleryImages({
         manifest: resolvedPackage.manifest,
-        applicationId: application.id,
+        applicationRegistrationId: appRegistration.id,
         fileIdByRelativePath,
       });
 
@@ -631,11 +631,11 @@ export class ApplicationInstallService {
 
   private async importGalleryImages({
     manifest,
-    applicationId,
+    applicationRegistrationId,
     fileIdByRelativePath,
   }: {
     manifest: Manifest;
-    applicationId: string;
+    applicationRegistrationId: string;
     fileIdByRelativePath: Map<string, string>;
   }): Promise<void> {
     const galleryImagePaths = toGalleryImagePaths(manifest.application);
@@ -668,8 +668,8 @@ export class ApplicationInstallService {
       fileIds.push(fileId);
     }
 
-    await this.applicationGalleryImageService.replaceApplicationGalleryImages({
-      applicationId,
+    await this.applicationGalleryImageService.replaceRegistrationGalleryImages({
+      applicationRegistrationId,
       fileIds,
     });
   }

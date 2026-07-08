@@ -12,35 +12,6 @@ export class ApplicationGalleryImageService {
     private readonly applicationGalleryImageRepository: Repository<ApplicationGalleryImageEntity>,
   ) {}
 
-  async replaceApplicationGalleryImages({
-    applicationId,
-    fileIds,
-  }: {
-    applicationId: string;
-    fileIds: string[];
-  }): Promise<void> {
-    await this.applicationGalleryImageRepository.manager.transaction(
-      async (entityManager) => {
-        await entityManager.delete(ApplicationGalleryImageEntity, {
-          applicationId,
-        });
-
-        if (fileIds.length === 0) {
-          return;
-        }
-
-        await entityManager.insert(
-          ApplicationGalleryImageEntity,
-          fileIds.map((fileId, position) => ({
-            fileId,
-            position,
-            applicationId,
-          })),
-        );
-      },
-    );
-  }
-
   async replaceRegistrationGalleryImages({
     applicationRegistrationId,
     fileIds,
